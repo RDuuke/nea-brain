@@ -1,0 +1,290 @@
+{
+  "version": "1",
+  "children": [
+    {
+      "type": "frame",
+      "id": "M4zz8",
+      "x": 0,
+      "y": 0,
+      "name": "Hexagonal Architecture",
+      "width": 1600,
+      "height": 900,
+      "fill": "#F7F5F1",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "GR5rJ",
+          "x": 40,
+          "y": 40,
+          "name": "hexTitle",
+          "fill": "#1F2933",
+          "content": "Hexagonal Architecture",
+          "fontFamily": "IBM Plex Sans",
+          "fontSize": 32,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "ccpG0",
+          "x": 40,
+          "y": 140,
+          "name": "Inbound Adapters",
+          "width": 260,
+          "height": 680,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "kAogN",
+              "name": "textInboundAdapters",
+              "fill": "#1F2933",
+              "content": "Inbound Adapters\nCLI\nHTTP\nMCP\nTUI",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 14,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "4SwAf",
+          "x": 340,
+          "y": 140,
+          "name": "Inbound Ports",
+          "width": 260,
+          "height": 680,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "8eY8z",
+              "name": "textInboundPorts",
+              "fill": "#1F2933",
+              "content": "Inbound Ports\nObservationService\nSearchService\nTopicService\nSessionService\nConfigService",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 14,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "SMhgd",
+          "x": 640,
+          "y": 140,
+          "name": "Core Domain",
+          "width": 260,
+          "height": 680,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "OAxTG",
+              "name": "textCoreDomain",
+              "fill": "#1F2933",
+              "content": "Core Domain\nObservation\nTopic\nSession\nDuplicate",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 14,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "XkFzT",
+          "x": 940,
+          "y": 140,
+          "name": "Outbound Ports",
+          "width": 260,
+          "height": 680,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "tDUqJ",
+              "name": "textOutboundPorts",
+              "fill": "#1F2933",
+              "content": "Outbound Ports\nObservationRepository\nTopicRepository\nSessionRepository\nDuplicateRepository\nSearchIndex\nClock\nConfigStore",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 14,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "zpTqA",
+          "x": 1240,
+          "y": 140,
+          "name": "Outbound Adapters",
+          "width": 260,
+          "height": 680,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "9faUE",
+              "name": "textOutboundAdapters",
+              "fill": "#1F2933",
+              "content": "Outbound Adapters\nSQLite Repositories\nSQLite FTS\nConfig Adapter\nClock Adapter",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 14,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "line",
+          "id": "Jc9aK",
+          "x": 300,
+          "y": 480,
+          "name": "arrowLine1",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "line",
+          "id": "6G4D1",
+          "x": 600,
+          "y": 480,
+          "name": "arrowLine2",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "line",
+          "id": "Z1u3G",
+          "x": 900,
+          "y": 480,
+          "name": "arrowLine3",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "line",
+          "id": "rdpp2",
+          "x": 1200,
+          "y": 480,
+          "name": "arrowLine4",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "mGGb2",
+          "x": 336,
+          "y": 476,
+          "name": "arrowHead1",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "polygon",
+          "id": "xftI2",
+          "x": 636,
+          "y": 476,
+          "name": "arrowHead2",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "polygon",
+          "id": "SXVII",
+          "x": 936,
+          "y": 476,
+          "name": "arrowHead3",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "polygon",
+          "id": "BUh0l",
+          "x": 1236,
+          "y": 476,
+          "name": "arrowHead4",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "neabrain-mcp",
+  "version": "0.1.0",
+  "description": "OpenCode MCP plugin for NeaBrain.",
+  "adapter": "./adapter.ts",
+  "mcp": {
+    "command": "C:\\Users\\juandg\\Desktop\\MotorBD\\neabrain.exe",
+    "args": ["mcp"]
+  }
+}

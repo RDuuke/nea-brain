@@ -1,0 +1,559 @@
+{
+  "version": "1",
+  "children": [
+    {
+      "type": "frame",
+      "id": "HwfBI",
+      "x": 0,
+      "y": 0,
+      "name": "Data Flow",
+      "width": 1400,
+      "height": 720,
+      "fill": "#F7F5F1",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "i23pC",
+          "x": 40,
+          "y": 40,
+          "name": "flowTitle",
+          "fill": "#1F2933",
+          "content": "Data Flow",
+          "fontFamily": "IBM Plex Sans",
+          "fontSize": 32,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "p3NB0",
+          "x": 60,
+          "y": 140,
+          "name": "Client",
+          "width": 220,
+          "height": 70,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "Lq01Z",
+              "name": "clientText",
+              "fill": "#1F2933",
+              "content": "Client\n(CLI / HTTP / MCP / TUI)",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "textAlign": "center",
+              "lineHeight": 1.3
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "AP0OS",
+          "x": 320,
+          "y": 140,
+          "name": "Inbound Adapter",
+          "width": 220,
+          "height": 70,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "dwAW3",
+              "name": "adapterText",
+              "fill": "#1F2933",
+              "content": "Inbound Adapter",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "scGun",
+          "x": 580,
+          "y": 140,
+          "name": "Domain Service",
+          "width": 220,
+          "height": 70,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "xDEJu",
+              "name": "serviceText",
+              "fill": "#1F2933",
+              "content": "Domain Service",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "5dsK2",
+          "x": 840,
+          "y": 140,
+          "name": "SQLite Repositories",
+          "width": 220,
+          "height": 70,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "NI56k",
+              "name": "repoText",
+              "fill": "#1F2933",
+              "content": "SQLite Repositories",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "SN3Eh",
+          "x": 840,
+          "y": 260,
+          "name": "SQLite FTS",
+          "width": 220,
+          "height": 70,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "5X5oQ",
+              "name": "ftsText",
+              "fill": "#1F2933",
+              "content": "SQLite FTS",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "hbZ44",
+          "x": 1100,
+          "y": 260,
+          "name": "neabrain.db",
+          "width": 220,
+          "height": 70,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "LTajh",
+              "name": "dbText",
+              "fill": "#1F2933",
+              "content": "neabrain.db",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "P4D88",
+          "x": 580,
+          "y": 420,
+          "name": "Domain Result",
+          "width": 220,
+          "height": 70,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "HLudq",
+              "name": "resultText",
+              "fill": "#1F2933",
+              "content": "Domain Result",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "mCIu4",
+          "x": 320,
+          "y": 420,
+          "name": "Inbound Adapter (return)",
+          "width": 220,
+          "height": 70,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "rMmKB",
+              "name": "returnAdapterText",
+              "fill": "#1F2933",
+              "content": "Inbound Adapter",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Wc1bG",
+          "x": 60,
+          "y": 420,
+          "name": "Client (return)",
+          "width": 220,
+          "height": 70,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "iYWDx",
+              "name": "returnClientText",
+              "fill": "#1F2933",
+              "content": "Client",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "line",
+          "id": "3CZkP",
+          "x": 280,
+          "y": 175,
+          "name": "lineClientAdapter",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "BDRKf",
+          "x": 316,
+          "y": 171,
+          "name": "arrowClientAdapter",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "kSrht",
+          "x": 540,
+          "y": 175,
+          "name": "lineAdapterService",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "o5juT",
+          "x": 576,
+          "y": 171,
+          "name": "arrowAdapterService",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "j13jj",
+          "x": 800,
+          "y": 175,
+          "name": "lineServiceRepo",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "wVaUl",
+          "x": 836,
+          "y": 171,
+          "name": "arrowServiceRepo",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "llT9u",
+          "x": 800,
+          "y": 175,
+          "name": "lineServiceFtsVertical",
+          "width": 1,
+          "height": 120,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "line",
+          "id": "7qgRc",
+          "x": 800,
+          "y": 295,
+          "name": "lineServiceFtsHorizontal",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "Wv4Us",
+          "x": 836,
+          "y": 291,
+          "name": "arrowServiceFts",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "nCXYz",
+          "x": 1060,
+          "y": 175,
+          "name": "lineRepoDbVertical",
+          "width": 1,
+          "height": 120,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "line",
+          "id": "APvaw",
+          "x": 1060,
+          "y": 295,
+          "name": "lineRepoDbHorizontal",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "Wrp2i",
+          "x": 1096,
+          "y": 291,
+          "name": "arrowRepoDb",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "PITaz",
+          "x": 950,
+          "y": 235,
+          "name": "lineFtsDbVertical",
+          "width": 1,
+          "height": 60,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "line",
+          "id": "1INyZ",
+          "x": 950,
+          "y": 235,
+          "name": "lineFtsDbHorizontal",
+          "width": 150,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "Fazoo",
+          "x": 1096,
+          "y": 231,
+          "name": "arrowFtsDb",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "9pHSB",
+          "x": 690,
+          "y": 210,
+          "name": "lineServiceResult",
+          "width": 1,
+          "height": 210,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "vK36l",
+          "x": 686,
+          "y": 416,
+          "name": "arrowServiceResult",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 180,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "Ko8uE",
+          "x": 540,
+          "y": 455,
+          "name": "lineResultReturnAdapter",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "mtul2",
+          "x": 540,
+          "y": 451,
+          "name": "arrowResultReturnAdapter",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 270,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "UF2Dg",
+          "x": 280,
+          "y": 455,
+          "name": "lineReturnAdapterClient",
+          "width": 40,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "CqPuj",
+          "x": 280,
+          "y": 451,
+          "name": "arrowReturnAdapterClient",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 270,
+          "fill": "#6B7280"
+        }
+      ]
+    }
+  ]
+}

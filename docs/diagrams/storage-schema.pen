@@ -1,0 +1,322 @@
+{
+  "version": "1",
+  "children": [
+    {
+      "type": "frame",
+      "id": "BbI5V",
+      "x": 0,
+      "y": 0,
+      "name": "Storage Schema",
+      "width": 1500,
+      "height": 900,
+      "fill": "#F7F5F1",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "jdhVS",
+          "x": 40,
+          "y": 40,
+          "name": "schemaTitle",
+          "fill": "#1F2933",
+          "content": "Storage Schema",
+          "fontFamily": "IBM Plex Sans",
+          "fontSize": 32,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "jriWp",
+          "x": 60,
+          "y": 140,
+          "name": "schema_migrations",
+          "width": 240,
+          "height": 160,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 6,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "JnrS4",
+              "name": "textSchema",
+              "fill": "#1F2933",
+              "content": "schema_migrations\n- version (PK)\n- name\n- applied_at",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YTkxg",
+          "x": 60,
+          "y": 350,
+          "name": "topics",
+          "width": 260,
+          "height": 240,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 6,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "2cclU",
+              "name": "textTopics",
+              "fill": "#1F2933",
+              "content": "topics\n- id (PK)\n- topic_key (UNIQUE)\n- name\n- description\n- metadata\n- created_at\n- updated_at",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ozmdT",
+          "x": 60,
+          "y": 650,
+          "name": "sessions",
+          "width": 260,
+          "height": 200,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 6,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "70kcI",
+              "name": "textSessions",
+              "fill": "#1F2933",
+              "content": "sessions\n- id (PK)\n- created_at\n- last_seen_at\n- disclosure_level\n- recent_operations",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "C3jB4",
+          "x": 380,
+          "y": 220,
+          "name": "observations",
+          "width": 340,
+          "height": 340,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 6,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "3HvJm",
+              "name": "textObservations",
+              "fill": "#1F2933",
+              "content": "observations\n- id (PK)\n- content\n- created_at\n- updated_at\n- deleted_at\n- project\n- topic_key\n- tags\n- source\n- metadata",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Zk6zL",
+          "x": 380,
+          "y": 620,
+          "name": "duplicates",
+          "width": 340,
+          "height": 200,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 6,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "RtU6n",
+              "name": "textDuplicates",
+              "fill": "#1F2933",
+              "content": "duplicates\n- id (PK)\n- original_observation_id\n- duplicate_observation_id\n- reason\n- created_at",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Gn4Z9",
+          "x": 820,
+          "y": 260,
+          "name": "observations_fts",
+          "width": 300,
+          "height": 160,
+          "fill": "#FFFFFF",
+          "stroke": {
+            "thickness": 1,
+            "fill": "#D6D3CA"
+          },
+          "layout": "vertical",
+          "gap": 6,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "pptxd",
+              "name": "textFts",
+              "fill": "#1F2933",
+              "content": "observations_fts\n- content\n- observation_id",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 13,
+              "fontWeight": "500",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "lineHeight": 1.4
+            }
+          ]
+        },
+        {
+          "type": "line",
+          "id": "i92On",
+          "x": 450,
+          "y": 560,
+          "name": "lineObsDup1",
+          "width": 1,
+          "height": 60,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "pdLOq",
+          "x": 446,
+          "y": 616,
+          "name": "arrowObsDup1",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 180,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "z8kKA",
+          "x": 650,
+          "y": 560,
+          "name": "lineObsDup2",
+          "width": 1,
+          "height": 60,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "BqLGP",
+          "x": 646,
+          "y": 616,
+          "name": "arrowObsDup2",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 180,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "TYzVF",
+          "x": 720,
+          "y": 340,
+          "name": "lineObsFts",
+          "width": 100,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "2tDa4",
+          "x": 816,
+          "y": 336,
+          "name": "arrowObsFts",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        },
+        {
+          "type": "line",
+          "id": "erxwx",
+          "x": 320,
+          "y": 470,
+          "name": "lineTopicsObs",
+          "width": 60,
+          "height": 1,
+          "stroke": {
+            "thickness": 2,
+            "fill": "#6B7280"
+          }
+        },
+        {
+          "type": "polygon",
+          "id": "U7Z4X",
+          "x": 376,
+          "y": 466,
+          "name": "arrowTopicsObs",
+          "width": 8,
+          "height": 8,
+          "polygonCount": 3,
+          "rotation": 90,
+          "fill": "#6B7280"
+        }
+      ]
+    }
+  ]
+}

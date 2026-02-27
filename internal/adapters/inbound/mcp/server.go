@@ -65,6 +65,19 @@ func (s *Server) Handle(ctx context.Context, req Request) Response {
 	}
 
 	switch req.Method {
+	case "initialize":
+		return Response{JSONRPC: "2.0", ID: req.ID, Result: map[string]any{
+			"protocolVersion": "2024-11-05",
+			"capabilities": map[string]any{
+				"tools": map[string]any{},
+			},
+			"serverInfo": map[string]any{
+				"name":    "neabrain",
+				"version": "0.1.0",
+			},
+		}}
+	case "initialized", "notifications/initialized":
+		return Response{JSONRPC: "2.0", ID: req.ID, Result: map[string]any{}}
 	case "tools/list":
 		return Response{JSONRPC: "2.0", ID: req.ID, Result: toolsListResult{Tools: toolDefinitions()}}
 	case "tools/call":
@@ -111,7 +124,7 @@ type toolsListResult struct {
 type ToolDefinition struct {
 	Name        string         `json:"name"`
 	Description string         `json:"description"`
-	InputSchema map[string]any `json:"input_schema"`
+	InputSchema map[string]any `json:"inputSchema"`
 }
 
 type observationCreateArgs struct {
@@ -178,6 +191,22 @@ type sessionUpdateArgs struct {
 	DisclosureLevel string `json:"disclosure_level"`
 }
 
+type nbnSessionSummaryArgs struct {
+	Summary  string         `json:"summary"`
+	Project  string         `json:"project"`
+	TopicKey string         `json:"topic_key"`
+	Tags     []string       `json:"tags"`
+	Metadata map[string]any `json:"metadata"`
+}
+
+type nbnContextArgs struct {
+	Query          string   `json:"query"`
+	Project        string   `json:"project"`
+	TopicKey       string   `json:"topic_key"`
+	Tags           []string `json:"tags"`
+	IncludeDeleted bool     `json:"include_deleted"`
+}
+
 func (s *Server) handleToolsCall(ctx context.Context, req Request) Response {
 	var params toolsCallParams
 	if err := json.Unmarshal(req.Params, &params); err != nil {
@@ -194,6 +223,63 @@ func (s *Server) handleToolsCall(ctx context.Context, req Request) Response {
 		if s.app.Metrics != nil {
 			s.app.Metrics.Inc("adapter.mcp.tool." + name)
 		}
+	}
+
+	switch name {
+	case "nbn_session_summary":
+		var args nbnSessionSummaryArgs
+		if err := json.Unmarshal(params.Arguments, &args); err != nil {
+			return Response{JSONRPC: "2.0", ID: req.ID, Error: &RPCError{Code: -32602, Message: "invalid nbn_session_summary args"}}
+		}
+		tags := args.Tags
+		if len(tags) == 0 {
+			tags = []string{"opencode", "session_summary"}
+		}
+		created, err := s.app.ObservationService.Create(ctx, domain.ObservationCreateInput{
+			Content:        args.Summary,
+			Project:        pickProject(args.Project, s.app.Config.DefaultProject),
+			TopicKey:       args.TopicKey,
+			Tags:           tags,
+			Source:         "opencode",
+			Metadata:       args.Metadata,
+			AllowDuplicate: true,
+		})
+		if err != nil {
+			return Response{JSONRPC: "2.0", ID: req.ID, Error: rpcErrorFrom(err)}
+		}
+		return Response{JSONRPC: "2.0", ID: req.ID, Result: created}
+	case "nbn_context":
+		var args nbnContextArgs
+		if err := json.Unmarshal(params.Arguments, &args); err != nil {
+			return Response{JSONRPC: "2.0", ID: req.ID, Error: &RPCError{Code: -32602, Message: "invalid nbn_context args"}}
+		}
+		results, err := s.app.SearchService.Search(ctx, args.Query, domain.SearchFilter{
+			Project:        pickProject(args.Project, s.app.Config.DefaultProject),
+			TopicKey:       args.TopicKey,
+			Tags:           args.Tags,
+			IncludeDeleted: args.IncludeDeleted,
+		})
+		if err != nil {
+			return Response{JSONRPC: "2.0", ID: req.ID, Error: rpcErrorFrom(err)}
+		}
+		return Response{JSONRPC: "2.0", ID: req.ID, Result: results}
+	}
+
+	alias := map[string]string{
+		"nbn_observation_create":        "observation.create",
+		"nbn_observation_read":          "observation.read",
+		"nbn_observation_update":        "observation.update",
+		"nbn_observation_list":          "observation.list",
+		"nbn_observation_delete":        "observation.delete",
+		"nbn_search":                    "search",
+		"nbn_topic_upsert":              "topic.upsert",
+		"nbn_session_open":              "session.open",
+		"nbn_session_resume":            "session.resume",
+		"nbn_session_update_disclosure": "session.update_disclosure",
+		"nbn_config_show":               "config.show",
+	}
+	if mapped, ok := alias[name]; ok {
+		name = mapped
 	}
 
 	switch name {
@@ -357,11 +443,33 @@ func toolDefinitions() []ToolDefinition {
 			"metadata":        schemaObjectAny(),
 			"allow_duplicate": schemaBool(),
 		}, "content")},
+		{Name: "nbn_observation_create", Description: "Alias for observation.create", InputSchema: schemaObject(map[string]any{
+			"content":         schemaString(),
+			"project":         schemaString(),
+			"topic_key":       schemaString(),
+			"tags":            schemaStringArray(),
+			"source":          schemaString(),
+			"metadata":        schemaObjectAny(),
+			"allow_duplicate": schemaBool(),
+		}, "content")},
 		{Name: "observation.read", Description: "Read an observation by id", InputSchema: schemaObject(map[string]any{
 			"id":              schemaString(),
 			"include_deleted": schemaBool(),
 		}, "id")},
+		{Name: "nbn_observation_read", Description: "Alias for observation.read", InputSchema: schemaObject(map[string]any{
+			"id":              schemaString(),
+			"include_deleted": schemaBool(),
+		}, "id")},
 		{Name: "observation.update", Description: "Update an observation", InputSchema: schemaObject(map[string]any{
+			"id":        schemaString(),
+			"content":   schemaString(),
+			"project":   schemaString(),
+			"topic_key": schemaString(),
+			"tags":      schemaStringArray(),
+			"source":    schemaString(),
+			"metadata":  schemaObjectAny(),
+		}, "id")},
+		{Name: "nbn_observation_update", Description: "Alias for observation.update", InputSchema: schemaObject(map[string]any{
 			"id":        schemaString(),
 			"content":   schemaString(),
 			"project":   schemaString(),
@@ -376,10 +484,33 @@ func toolDefinitions() []ToolDefinition {
 			"tags":            schemaStringArray(),
 			"include_deleted": schemaBool(),
 		})},
+		{Name: "nbn_observation_list", Description: "Alias for observation.list", InputSchema: schemaObject(map[string]any{
+			"project":         schemaString(),
+			"topic_key":       schemaString(),
+			"tags":            schemaStringArray(),
+			"include_deleted": schemaBool(),
+		})},
 		{Name: "observation.delete", Description: "Soft delete an observation", InputSchema: schemaObject(map[string]any{
 			"id": schemaString(),
 		}, "id")},
+		{Name: "nbn_observation_delete", Description: "Alias for observation.delete", InputSchema: schemaObject(map[string]any{
+			"id": schemaString(),
+		}, "id")},
 		{Name: "search", Description: "Search observations", InputSchema: schemaObject(map[string]any{
+			"query":           schemaString(),
+			"project":         schemaString(),
+			"topic_key":       schemaString(),
+			"tags":            schemaStringArray(),
+			"include_deleted": schemaBool(),
+		}, "query")},
+		{Name: "nbn_search", Description: "Alias for search", InputSchema: schemaObject(map[string]any{
+			"query":           schemaString(),
+			"project":         schemaString(),
+			"topic_key":       schemaString(),
+			"tags":            schemaStringArray(),
+			"include_deleted": schemaBool(),
+		}, "query")},
+		{Name: "nbn_context", Description: "Alias for search (context)", InputSchema: schemaObject(map[string]any{
 			"query":           schemaString(),
 			"project":         schemaString(),
 			"topic_key":       schemaString(),
@@ -392,17 +523,41 @@ func toolDefinitions() []ToolDefinition {
 			"description": schemaString(),
 			"metadata":    schemaObjectAny(),
 		}, "topic_key")},
+		{Name: "nbn_topic_upsert", Description: "Alias for topic.upsert", InputSchema: schemaObject(map[string]any{
+			"topic_key":   schemaString(),
+			"name":        schemaString(),
+			"description": schemaString(),
+			"metadata":    schemaObjectAny(),
+		}, "topic_key")},
 		{Name: "session.open", Description: "Open a session", InputSchema: schemaObject(map[string]any{
 			"disclosure_level": schemaString(),
 		}, "disclosure_level")},
+		{Name: "nbn_session_open", Description: "Alias for session.open", InputSchema: schemaObject(map[string]any{
+			"disclosure_level": schemaString(),
+		}, "disclosure_level")},
 		{Name: "session.resume", Description: "Resume a session", InputSchema: schemaObject(map[string]any{
+			"id": schemaString(),
+		}, "id")},
+		{Name: "nbn_session_resume", Description: "Alias for session.resume", InputSchema: schemaObject(map[string]any{
 			"id": schemaString(),
 		}, "id")},
 		{Name: "session.update_disclosure", Description: "Update disclosure level", InputSchema: schemaObject(map[string]any{
 			"id":               schemaString(),
 			"disclosure_level": schemaString(),
 		}, "id", "disclosure_level")},
+		{Name: "nbn_session_update_disclosure", Description: "Alias for session.update_disclosure", InputSchema: schemaObject(map[string]any{
+			"id":               schemaString(),
+			"disclosure_level": schemaString(),
+		}, "id", "disclosure_level")},
 		{Name: "config.show", Description: "Show effective config", InputSchema: schemaObject(map[string]any{})},
+		{Name: "nbn_config_show", Description: "Alias for config.show", InputSchema: schemaObject(map[string]any{})},
+		{Name: "nbn_session_summary", Description: "Store a session summary", InputSchema: schemaObject(map[string]any{
+			"summary":   schemaString(),
+			"project":   schemaString(),
+			"topic_key": schemaString(),
+			"tags":      schemaStringArray(),
+			"metadata":  schemaObjectAny(),
+		}, "summary")},
 	}
 }
 
