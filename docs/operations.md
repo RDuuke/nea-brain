@@ -9,6 +9,7 @@
 - FTS path: defaults to storage path when unset
 - Default project: empty
 - Dedupe policy: exact
+ - Startup creates the config directory and storage parent directories if missing
 
 ### Precedence (highest first)
 1) CLI overrides
@@ -32,6 +33,12 @@
   "dedupe_policy": "exact"
 }
 ```
+
+### Relative Paths
+- Config file paths are resolved relative to the current working directory.
+- Storage/FTS paths from the config file are resolved relative to the config file location.
+- Storage/FTS paths from CLI overrides or environment variables are resolved relative to the current working directory.
+- Storage/FTS paths are normalized (cleaned separators and dot segments) before use; parent directories are created if missing.
 
 ### CLI Overrides
 ```bash

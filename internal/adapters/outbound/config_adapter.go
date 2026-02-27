@@ -34,7 +34,9 @@ func (a *ConfigAdapter) Resolve(ctx context.Context, overrides ports.ConfigOverr
 		return ports.ResolvedPaths{}, err
 	}
 
-	configPath := resolveConfigFilePath(overrides, defaults)
+	workingDir := resolveWorkingDir()
+
+	configPath := resolveRelativePath(workingDir, resolveConfigFilePath(overrides, defaults))
 	fileConfig, err := loadFileConfig(configPath)
 	if err != nil {
 		return ports.ResolvedPaths{}, err
@@ -56,6 +58,11 @@ func (a *ConfigAdapter) Resolve(ctx context.Context, overrides ports.ConfigOverr
 		ftsPath = storagePath
 	}
 
+	storagePath = resolveRelativePath(workingDir, storagePath)
+	storagePath = normalizePath(storagePath)
+	ftsPath = resolveRelativePath(workingDir, ftsPath)
+	ftsPath = normalizePath(ftsPath)
+
 	return ports.ResolvedPaths{StoragePath: storagePath, FTSPath: ftsPath}, nil
 }
 
@@ -65,7 +72,9 @@ func (a *ConfigAdapter) Load(ctx context.Context, overrides ports.ConfigOverride
 		return ports.Config{}, err
 	}
 
-	configPath := resolveConfigFilePath(overrides, defaults)
+	workingDir := resolveWorkingDir()
+
+	configPath := resolveRelativePath(workingDir, resolveConfigFilePath(overrides, defaults))
 	fileConfig, err := loadFileConfig(configPath)
 	if err != nil {
 		return ports.Config{}, err
@@ -86,6 +95,11 @@ func (a *ConfigAdapter) Load(ctx context.Context, overrides ports.ConfigOverride
 	if strings.TrimSpace(ftsPath) == "" {
 		ftsPath = storagePath
 	}
+
+	storagePath = resolveRelativePath(workingDir, storagePath)
+	storagePath = normalizePath(storagePath)
+	ftsPath = resolveRelativePath(workingDir, ftsPath)
+	ftsPath = normalizePath(ftsPath)
 	defaultProject := pickFirst(
 		valueFromPtr(overrides.DefaultProject),
 		strings.TrimSpace(os.Getenv(envDefaultProject)),
@@ -100,6 +114,13 @@ func (a *ConfigAdapter) Load(ctx context.Context, overrides ports.ConfigOverride
 	)
 	validatedDedupe, err := normalizeDedupePolicy(dedupePolicy, defaults.DedupePolicy)
 	if err != nil {
+		return ports.Config{}, err
+	}
+
+	if err := ensureParentDir(storagePath); err != nil {
+		return ports.Config{}, err
+	}
+	if err := ensureParentDir(ftsPath); err != nil {
 		return ports.Config{}, err
 	}
 
@@ -128,6 +149,9 @@ func resolveDefaults() (configDefaults, error) {
 	}
 
 	baseDir := filepath.Join(configDir, "neabrain")
+	if err := os.MkdirAll(baseDir, 0o755); err != nil {
+		return configDefaults{}, err
+	}
 	storagePath := filepath.Join(baseDir, "neabrain.db")
 	return configDefaults{
 		StoragePath:    storagePath,
@@ -174,7 +198,9 @@ func loadFileConfig(path string) (fileConfig, error) {
 
 	baseDir := filepath.Dir(path)
 	cfg.StoragePath = resolveRelativePath(baseDir, cfg.StoragePath)
+	cfg.StoragePath = normalizePath(cfg.StoragePath)
 	cfg.FTSPath = resolveRelativePath(baseDir, cfg.FTSPath)
+	cfg.FTSPath = normalizePath(cfg.FTSPath)
 
 	return cfg, nil
 }
@@ -188,6 +214,34 @@ func resolveRelativePath(baseDir string, value string) string {
 		return trimmed
 	}
 	return filepath.Join(baseDir, trimmed)
+}
+
+func normalizePath(value string) string {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return ""
+	}
+	return filepath.Clean(filepath.FromSlash(trimmed))
+}
+
+func resolveWorkingDir() string {
+	workingDir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	return workingDir
+}
+
+func ensureParentDir(path string) error {
+	trimmed := strings.TrimSpace(path)
+	if trimmed == "" {
+		return nil
+	}
+	dir := filepath.Dir(trimmed)
+	if dir == "." || dir == "" {
+		return nil
+	}
+	return os.MkdirAll(dir, 0o755)
 }
 
 func pickFirst(values ...string) string {

@@ -16,3 +16,21 @@ NeaBrain follows a hexagonal (ports and adapters) architecture:
 
 ## Operations
 Configuration defaults, environment variables, and verification steps are documented in `docs/operations.md`.
+
+## Usage
+Serve command uses `--addr` for bind address.
+
+HTTP:
+```console
+go run ./cmd/neabrain serve --addr 127.0.0.1:8080
+```
+
+CLI:
+```console
+go run ./cmd/neabrain obs list
+```
+
+MCP:
+```console
+go run ./cmd/neabrain mcp
+```
