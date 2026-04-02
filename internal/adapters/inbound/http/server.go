@@ -19,9 +19,26 @@ func NewServer(appInstance *app.App, addr string) *http.Server {
 	}
 }
 
+// NewServerWithNotifier builds an HTTP server with an optional post-write notifier.
+func NewServerWithNotifier(appInstance *app.App, addr string, notifier WriteNotifier) *http.Server {
+	return &http.Server{
+		Addr:    addr,
+		Handler: NewHandlerWithNotifier(appInstance, notifier),
+	}
+}
+
+// WriteNotifier is called in the background after each successful write mutation.
+// A nil notifier is a no-op.
+type WriteNotifier func()
+
 // NewHandler returns a mux with all API routes.
 func NewHandler(appInstance *app.App) http.Handler {
-	handler := &Handler{app: appInstance}
+	return NewHandlerWithNotifier(appInstance, nil)
+}
+
+// NewHandlerWithNotifier returns a mux with an optional post-write notifier.
+func NewHandlerWithNotifier(appInstance *app.App, notifier WriteNotifier) http.Handler {
+	handler := &Handler{app: appInstance, notifier: notifier}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/observations", handler.handleObservations)
 	mux.HandleFunc("/observations/", handler.handleObservationByID)
@@ -34,7 +51,14 @@ func NewHandler(appInstance *app.App) http.Handler {
 
 // Handler maps HTTP requests to domain services.
 type Handler struct {
-	app *app.App
+	app      *app.App
+	notifier WriteNotifier
+}
+
+func (h *Handler) notifyWrite() {
+	if h.notifier != nil {
+		go h.notifier()
+	}
 }
 
 type loggingHandler struct {
@@ -272,6 +296,7 @@ func (h *Handler) createObservation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusCreated, created)
+	h.notifyWrite()
 }
 
 func (h *Handler) readObservation(w http.ResponseWriter, r *http.Request, id string) {
@@ -317,6 +342,7 @@ func (h *Handler) updateObservation(w http.ResponseWriter, r *http.Request, id s
 		return
 	}
 	writeJSON(w, http.StatusOK, updated)
+	h.notifyWrite()
 }
 
 func (h *Handler) listObservations(w http.ResponseWriter, r *http.Request) {
@@ -341,6 +367,7 @@ func (h *Handler) deleteObservation(w http.ResponseWriter, r *http.Request, id s
 		return
 	}
 	writeJSON(w, http.StatusOK, deleted)
+	h.notifyWrite()
 }
 
 func decodeJSON(r *http.Request, target any) error {

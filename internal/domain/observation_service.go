@@ -202,6 +202,16 @@ func (s *ObservationService) RenameProject(ctx context.Context, oldName, newName
 	return s.repo.RenameProject(ctx, oldName, newName)
 }
 
+// ImportObservation stores an observation preserving its original ID and timestamps.
+// It is intended for sync import, where the observation was produced on another machine.
+// Duplicate IDs are silently skipped (returns a conflict error so the caller can skip).
+func (s *ObservationService) ImportObservation(ctx context.Context, obs Observation) (Observation, error) {
+	if strings.TrimSpace(obs.ID) == "" {
+		return Observation{}, NewInvalidInput("observation id is required")
+	}
+	return s.repo.Create(ctx, obs)
+}
+
 func (s *ObservationService) SoftDelete(ctx context.Context, id string) (Observation, error) {
 	if strings.TrimSpace(id) == "" {
 		return Observation{}, NewInvalidInput("observation id is required")

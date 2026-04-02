@@ -20,6 +20,7 @@ import (
 	"neabrain/internal/domain"
 	ports "neabrain/internal/ports/outbound"
 	"neabrain/internal/setup"
+	neasync "neabrain/internal/sync"
 	"neabrain/internal/version"
 )
 
@@ -60,6 +61,8 @@ func Run(ctx context.Context, args []string, out io.Writer, errOut io.Writer) in
 		return runSetup(args[1:], out, errOut)
 	case "version":
 		return runVersion(ctx, args[1:], out, errOut)
+	case "sync":
+		return runSync(ctx, args[1:], out, errOut)
 	default:
 		writeUsage(out)
 		return 2
@@ -521,9 +524,11 @@ func runServe(ctx context.Context, args []string, out io.Writer, errOut io.Write
 
 	var (
 		addr        string
+		syncDir     string
 		configFlags configFlagSet
 	)
 	fs.StringVar(&addr, "addr", ":8080", "HTTP listen address")
+	fs.StringVar(&syncDir, "sync-dir", "", "Enable write notifications: auto-export to this sync dir after each mutation")
 	configFlags.bind(fs)
 
 	if err := fs.Parse(args); err != nil {
@@ -539,9 +544,22 @@ func runServe(ctx context.Context, args []string, out io.Writer, errOut io.Write
 		_ = appInstance.Close()
 	}()
 
+	var notifier httpadapter.WriteNotifier
+	if syncDir != "" {
+		transport := neasync.NewFSTransport(syncDir)
+		syncer := neasync.New(transport)
+		notifier = func() {
+			filter := domain.ObservationListFilter{}
+			if _, err := syncer.Export(ctx, appInstance.ObservationService, filter); err != nil {
+				appInstance.Logger.Error("sync write notification failed", map[string]any{"error": err.Error()})
+			}
+		}
+		fmt.Fprintf(out, "write notifications enabled → %s\n", syncDir)
+	}
+
 	appInstance.Logger.Info("http server start", map[string]any{"addr": addr})
 	appInstance.Metrics.Inc("adapter.http.listen")
-	server := httpadapter.NewServer(appInstance, addr)
+	server := httpadapter.NewServerWithNotifier(appInstance, addr, notifier)
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return handleError(err, errOut)
 	}
@@ -806,6 +824,93 @@ func runVersion(ctx context.Context, args []string, out io.Writer, errOut io.Wri
 	fmt.Fprintf(out, "Update available: %s → %s\n", result.Current, result.Latest)
 	fmt.Fprintf(out, "Run: %s\n", result.UpdateCmd)
 	return 0
+}
+
+func runSync(ctx context.Context, args []string, out io.Writer, errOut io.Writer) int {
+	if len(args) == 0 {
+		fmt.Fprintln(out, "neabrain sync <export|import|status> [--dir D] [--project P]")
+		return 2
+	}
+
+	fs := flag.NewFlagSet("sync", flag.ContinueOnError)
+	fs.SetOutput(errOut)
+	syncDir := fs.String("dir", "", "Sync directory (default: ~/.config/neabrain/sync)")
+	project := fs.String("project", "", "Filter by project (export only)")
+	var configFlags configFlagSet
+	configFlags.bind(fs)
+	if err := fs.Parse(args[1:]); err != nil {
+		return 2
+	}
+
+	dir := *syncDir
+	if dir == "" {
+		var err error
+		dir, err = neasync.DefaultSyncDir()
+		if err != nil {
+			fmt.Fprintln(errOut, err.Error())
+			return 1
+		}
+	}
+	transport := neasync.NewFSTransport(dir)
+	syncer := neasync.New(transport)
+
+	switch args[0] {
+	case "export":
+		overrides := configFlags.toOverrides()
+		return withAppExitCode(ctx, overrides, "sync.export", func(a *app.App) error {
+			filter := domain.ObservationListFilter{Project: *project}
+			result, err := syncer.Export(ctx, a.ObservationService, filter)
+			if err != nil {
+				return err
+			}
+			if result.AlreadyExists {
+				fmt.Fprintf(out, "chunk %s already exists (no changes)\n", result.ChunkID[:12])
+				return nil
+			}
+			fmt.Fprintf(out, "exported %d observations → chunk %s (%d bytes)\n",
+				result.Count, result.ChunkID[:12], result.SizeBytes)
+			fmt.Fprintf(out, "sync dir: %s\n", dir)
+			return nil
+		}, errOut)
+
+	case "import":
+		overrides := configFlags.toOverrides()
+		return withAppExitCode(ctx, overrides, "sync.import", func(a *app.App) error {
+			result, err := syncer.Import(ctx, a.ObservationService)
+			if err != nil {
+				return err
+			}
+			if result.ChunksProcessed == 0 {
+				fmt.Fprintln(out, "nothing to import (all chunks already applied)")
+				return nil
+			}
+			fmt.Fprintf(out, "imported %d observations from %d chunk(s) (%d skipped as duplicates)\n",
+				result.Created, result.ChunksProcessed, result.Skipped)
+			return nil
+		}, errOut)
+
+	case "status":
+		status, err := syncer.Status(ctx)
+		if err != nil {
+			fmt.Fprintln(errOut, err.Error())
+			return 1
+		}
+		fmt.Fprintf(out, "sync dir:   %s\n", dir)
+		fmt.Fprintf(out, "chunks:     %d total, %d imported, %d pending\n",
+			status.TotalChunks, status.ImportedChunks, status.PendingChunks)
+		fmt.Fprintf(out, "exported:   %d observations\n", status.TotalExported)
+		return 0
+
+	default:
+		fmt.Fprintf(errOut, "unknown sync subcommand %q\n", args[0])
+		fmt.Fprintln(out, "neabrain sync <export|import|status> [--dir D] [--project P]")
+		return 2
+	}
+}
+
+// withAppExitCode is like withApp but returns an int exit code directly.
+func withAppExitCode(ctx context.Context, overrides ports.ConfigOverrides, op string, fn func(*app.App) error, errOut io.Writer) int {
+	return handleError(withApp(ctx, overrides, op, fn), errOut)
 }
 
 func runSetup(args []string, out io.Writer, errOut io.Writer) int {
@@ -1104,6 +1209,7 @@ func writeUsage(out io.Writer) {
 	fmt.Fprintln(out, "  projects <list|rename>")
 	fmt.Fprintln(out, "  setup <claude-code|cursor|vscode|opencode>")
 	fmt.Fprintln(out, "  version [--check]")
+	fmt.Fprintln(out, "  sync <export|import|status> [--dir D] [--project P]")
 	fmt.Fprintln(out, "  serve")
 	fmt.Fprintln(out, "  mcp")
 	fmt.Fprintln(out, "  tui")
