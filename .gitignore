@@ -49,3 +49,5 @@ build/
 # OpenCode artifacts
 .agents/
 .opencode/
+
+.claude
