@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -12,7 +13,7 @@ func TestInstallAndUninstall(t *testing.T) {
 	t.Setenv("HOME", home)
 	t.Setenv("USERPROFILE", home) // Windows
 
-	agents := []Agent{AgentClaudeCode, AgentCursor, AgentVSCode, AgentOpenCode}
+	agents := []Agent{AgentClaudeCode, AgentCursor, AgentVSCode, AgentOpenCode, AgentCodex}
 
 	for _, agent := range agents {
 		t.Run(string(agent), func(t *testing.T) {
@@ -57,6 +58,55 @@ func TestInstallAndUninstall(t *testing.T) {
 				t.Fatal("expected Removed = false on second uninstall")
 			}
 		})
+	}
+}
+
+func TestCodexInstallWritesTomlSection(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
+
+	res, err := Install(AgentCodex, `C:\tools\neabrain.exe`)
+	if err != nil {
+		t.Fatalf("Install failed: %v", err)
+	}
+	if res.AlreadySet {
+		t.Fatal("expected fresh install, got AlreadySet")
+	}
+
+	raw, err := os.ReadFile(filepath.Join(home, ".codex", "config.toml"))
+	if err != nil {
+		t.Fatalf("read config: %v", err)
+	}
+	text := string(raw)
+	if !strings.Contains(text, "[mcp_servers.neabrain]") {
+		t.Fatalf("codex mcp section missing: %s", text)
+	}
+	if !strings.Contains(text, `args = ["mcp"]`) {
+		t.Fatalf("codex mcp args missing: %s", text)
+	}
+
+	res2, err := Install(AgentCodex, `C:\tools\neabrain.exe`)
+	if err != nil {
+		t.Fatalf("second Install failed: %v", err)
+	}
+	if !res2.AlreadySet {
+		t.Fatal("expected AlreadySet on second install")
+	}
+
+	res3, err := Uninstall(AgentCodex)
+	if err != nil {
+		t.Fatalf("Uninstall failed: %v", err)
+	}
+	if !res3.Removed {
+		t.Fatal("expected Removed = true")
+	}
+	raw, err = os.ReadFile(filepath.Join(home, ".codex", "config.toml"))
+	if err != nil {
+		t.Fatalf("read config after uninstall: %v", err)
+	}
+	if strings.Contains(string(raw), "[mcp_servers.neabrain]") {
+		t.Fatalf("codex mcp section was not removed: %s", string(raw))
 	}
 }
 

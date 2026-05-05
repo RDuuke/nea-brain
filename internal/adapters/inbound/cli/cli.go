@@ -992,16 +992,26 @@ func runSetup(args []string, out io.Writer, errOut io.Writer) int {
 	fs.SetOutput(errOut)
 	install := fs.Bool("install", false, "Write config directly to the agent's config file")
 	uninstall := fs.Bool("uninstall", false, "Remove neabrain from the agent's config file")
-	if err := fs.Parse(args); err != nil {
+
+	var agentName string
+	parseArgs := args
+	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
+		agentName = args[0]
+		parseArgs = args[1:]
+	}
+
+	if err := fs.Parse(parseArgs); err != nil {
 		return 2
 	}
 
-	remaining := fs.Args()
-	if len(remaining) == 0 {
-		writeSetupUsage(out)
-		return 2
+	if agentName == "" {
+		remaining := fs.Args()
+		if len(remaining) == 0 {
+			writeSetupUsage(out)
+			return 2
+		}
+		agentName = remaining[0]
 	}
-	agentName := remaining[0]
 
 	agent := setup.Agent(agentName)
 	validAgents := map[setup.Agent]bool{
@@ -1009,6 +1019,7 @@ func runSetup(args []string, out io.Writer, errOut io.Writer) int {
 		setup.AgentCursor:     true,
 		setup.AgentVSCode:     true,
 		setup.AgentOpenCode:   true,
+		setup.AgentCodex:      true,
 	}
 	if !validAgents[agent] {
 		fmt.Fprintf(errOut, "unknown agent %q\n", agentName)
@@ -1114,6 +1125,13 @@ func printSetupSnippet(agent setup.Agent, exe string, out io.Writer) {
 		data, _ := json.MarshalIndent(cfg, "", "  ")
 		fmt.Fprintln(out, string(data))
 		fmt.Fprintln(out, "\nOr run: neabrain setup opencode --install")
+	case setup.AgentCodex:
+		fmt.Fprintln(out, "Add to ~/.codex/config.toml:")
+		fmt.Fprintln(out, "")
+		fmt.Fprintf(out, "[mcp_servers.neabrain]\n")
+		fmt.Fprintf(out, "command = %q\n", exe)
+		fmt.Fprintln(out, `args = ["mcp"]`)
+		fmt.Fprintln(out, "\nOr run: neabrain setup codex --install")
 	}
 }
 
@@ -1276,7 +1294,7 @@ func writeUsage(out io.Writer) {
 	fmt.Fprintln(out, "  session <open|resume|update-disclosure>")
 	fmt.Fprintln(out, "  config show")
 	fmt.Fprintln(out, "  projects <list|rename>")
-	fmt.Fprintln(out, "  setup <claude-code|cursor|vscode|opencode>")
+	fmt.Fprintln(out, "  setup <claude-code|cursor|vscode|opencode|codex>")
 	fmt.Fprintln(out, "  version [--check]")
 	fmt.Fprintln(out, "  sync <export|import|status> [--dir D] [--project P]")
 	fmt.Fprintln(out, "  serve")
@@ -1293,7 +1311,7 @@ func writeProjectsUsage(out io.Writer) {
 }
 
 func writeSetupUsage(out io.Writer) {
-	fmt.Fprintln(out, "neabrain setup <claude-code|cursor|vscode|opencode> [--install] [--uninstall]")
+	fmt.Fprintln(out, "neabrain setup <claude-code|cursor|vscode|opencode|codex> [--install] [--uninstall]")
 }
 
 func writeTopicUsage(out io.Writer) {

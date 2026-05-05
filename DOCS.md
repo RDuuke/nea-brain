@@ -518,7 +518,7 @@ neabrain session update-disclosure --id ID --level high
 
 neabrain config show
 
-neabrain setup <claude-code|cursor|vscode|opencode> [--install] [--uninstall]
+neabrain setup <claude-code|cursor|vscode|opencode|codex> [--install] [--uninstall]
 
 neabrain version
 neabrain version --check

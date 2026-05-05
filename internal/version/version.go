@@ -12,7 +12,7 @@ import (
 )
 
 // Current is the version embedded at build time.
-const Current = "0.2.0"
+const Current = "0.6.0"
 
 // releaseURL is the GitHub API endpoint for the latest release.
 const releaseURL = "https://api.github.com/repos/RDuuke/neabrain/releases/latest"

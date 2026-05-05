@@ -48,6 +48,7 @@ neabrain setup claude-code
 neabrain setup cursor
 neabrain setup vscode
 neabrain setup opencode
+neabrain setup codex
 
 # O escribir la configuración directamente
 neabrain setup claude-code --install
@@ -98,7 +99,7 @@ neabrain topic <upsert|list>
 neabrain session <open|resume|update-disclosure>
 neabrain projects <list|rename>
 neabrain config show
-neabrain setup <claude-code|cursor|vscode|opencode> [--install] [--uninstall]
+neabrain setup <claude-code|cursor|vscode|opencode|codex> [--install] [--uninstall]
 neabrain version [--check]
 neabrain sync <export|import|status> [--dir D] [--project P]
 neabrain serve [--addr :8080] [--sync-dir D]
@@ -194,7 +195,7 @@ internal/
 plugins/
   opencode-mcp/    ← plugin TypeScript para OpenCode
 docs/
-  integrations/    ← guías por agente (claude-code, cursor, vscode)
+  integrations/    ← guías por agente (claude-code, cursor, vscode, codex)
 ```
 
 ## Tests

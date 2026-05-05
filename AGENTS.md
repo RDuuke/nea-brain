@@ -134,6 +134,7 @@ neabrain setup claude-code   # → .claude/settings.json
 neabrain setup cursor        # → .cursor/mcp.json
 neabrain setup vscode        # → .vscode/mcp.json
 neabrain setup opencode      # → opencode.json
+neabrain setup codex         # → ~/.codex/config.toml
 ```
 
 Full setup guides: `docs/integrations/`

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 // Agent identifies a supported AI coding agent.
@@ -17,6 +18,7 @@ const (
 	AgentCursor     Agent = "cursor"
 	AgentVSCode     Agent = "vscode"
 	AgentOpenCode   Agent = "opencode"
+	AgentCodex      Agent = "codex"
 )
 
 // AgentNames returns all supported agent names as strings.
@@ -26,6 +28,7 @@ func AgentNames() []string {
 		string(AgentCursor),
 		string(AgentVSCode),
 		string(AgentOpenCode),
+		string(AgentCodex),
 	}
 }
 
@@ -43,6 +46,10 @@ func Install(agent Agent, exePath string) (Result, error) {
 	target, err := configPath(agent)
 	if err != nil {
 		return Result{}, err
+	}
+
+	if agent == AgentCodex {
+		return installCodex(target, exePath)
 	}
 
 	data, err := readOrEmpty(target)
@@ -73,6 +80,10 @@ func Uninstall(agent Agent) (Result, error) {
 	target, err := configPath(agent)
 	if err != nil {
 		return Result{}, err
+	}
+
+	if agent == AgentCodex {
+		return uninstallCodex(target)
 	}
 
 	data, err := readOrEmpty(target)
@@ -111,6 +122,8 @@ func configPath(agent Agent) (string, error) {
 		return vscodeConfigPath(home), nil
 	case AgentOpenCode:
 		return filepath.Join(home, ".config", "opencode", "config.json"), nil
+	case AgentCodex:
+		return filepath.Join(home, ".codex", "config.toml"), nil
 	default:
 		return "", fmt.Errorf("setup: unknown agent %q", agent)
 	}
@@ -194,6 +207,77 @@ func removeEntry(cfg map[string]any, agent Agent) bool {
 	return false
 }
 
+func installCodex(path string, exe string) (Result, error) {
+	data, err := readTextOrEmpty(path)
+	if err != nil {
+		return Result{}, err
+	}
+	if strings.Contains(data, "[mcp_servers.neabrain]") {
+		return Result{Agent: AgentCodex, ConfigFile: path, AlreadySet: true}, nil
+	}
+
+	block := fmt.Sprintf(`
+[mcp_servers.neabrain]
+command = "%s"
+args = ["mcp"]
+`, tomlEscape(exe))
+
+	if strings.TrimSpace(data) != "" && !strings.HasSuffix(data, "\n") {
+		data += "\n"
+	}
+	data += block
+
+	if err := writeText(path, data); err != nil {
+		return Result{}, err
+	}
+	return Result{Agent: AgentCodex, ConfigFile: path}, nil
+}
+
+func uninstallCodex(path string) (Result, error) {
+	data, err := readTextOrEmpty(path)
+	if err != nil {
+		return Result{}, err
+	}
+	next, removed := removeTomlSection(data, "[mcp_servers.neabrain]")
+	if !removed {
+		return Result{Agent: AgentCodex, ConfigFile: path}, nil
+	}
+	if err := writeText(path, next); err != nil {
+		return Result{}, err
+	}
+	return Result{Agent: AgentCodex, ConfigFile: path, Removed: true}, nil
+}
+
+func removeTomlSection(data string, header string) (string, bool) {
+	lines := strings.SplitAfter(data, "\n")
+	var out []string
+	removing := false
+	removed := false
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == header {
+			removing = true
+			removed = true
+			continue
+		}
+		if removing && strings.HasPrefix(trimmed, "[") && strings.HasSuffix(trimmed, "]") {
+			removing = false
+		}
+		if !removing {
+			out = append(out, line)
+		}
+	}
+
+	return strings.TrimRight(strings.Join(out, ""), "\n") + "\n", removed
+}
+
+func tomlEscape(value string) string {
+	value = strings.ReplaceAll(value, `\`, `\\`)
+	value = strings.ReplaceAll(value, `"`, `\"`)
+	return value
+}
+
 // --- helpers ---
 
 func nestedExists(m map[string]any, keys ...string) bool {
@@ -248,6 +332,14 @@ func readOrEmpty(path string) ([]byte, error) {
 	return data, err
 }
 
+func readTextOrEmpty(path string) (string, error) {
+	data, err := os.ReadFile(path)
+	if os.IsNotExist(err) {
+		return "", nil
+	}
+	return string(data), err
+}
+
 func writeJSON(path string, v any) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return fmt.Errorf("setup: mkdir %s: %w", filepath.Dir(path), err)
@@ -257,4 +349,11 @@ func writeJSON(path string, v any) error {
 		return fmt.Errorf("setup: marshal: %w", err)
 	}
 	return os.WriteFile(path, append(data, '\n'), 0o644)
+}
+
+func writeText(path string, data string) error {
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return fmt.Errorf("setup: mkdir %s: %w", filepath.Dir(path), err)
+	}
+	return os.WriteFile(path, []byte(data), 0o644)
 }
