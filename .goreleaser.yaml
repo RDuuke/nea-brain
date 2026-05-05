@@ -1,0 +1,123 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+
+project_name: neabrain
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: neabrain
+    main: ./cmd/neabrain
+    binary: neabrain
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+
+archives:
+  - id: neabrain
+    ids:
+      - neabrain
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - README.md
+      - CHANGELOG.md
+      - DOCS.md
+
+nfpms:
+  - id: neabrain
+    package_name: neabrain
+    ids:
+      - neabrain
+    vendor: RDuuke
+    homepage: https://github.com/RDuuke/nea-brain
+    maintainer: juandg <juan.duque1008@gmail.com>
+    description: |
+      NEA Brain: local-first persistent memory and MCP server for AI dev agents.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    bindir: /usr/bin
+    section: utils
+
+brews:
+  - name: neabrain
+    ids:
+      - neabrain
+    repository:
+      owner: RDuuke
+      name: homebrew-tap
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: Formula
+    homepage: https://github.com/RDuuke/nea-brain
+    description: NEA Brain local-first persistent memory and MCP server.
+    license: MIT
+    test: |
+      system "#{bin}/neabrain", "--help"
+    install: |
+      bin.install "neabrain"
+
+scoops:
+  - name: neabrain
+    ids:
+      - neabrain
+    repository:
+      owner: RDuuke
+      name: scoop-bucket
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: bucket
+    homepage: https://github.com/RDuuke/nea-brain
+    description: NEA Brain local-first persistent memory and MCP server.
+    license: MIT
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-snapshot"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\(.+?\))??!?:.+$'
+      order: 0
+    - title: Fixes
+      regexp: '^.*?fix(\(.+?\))??!?:.+$'
+      order: 1
+    - title: Other
+      order: 999
+
+release:
+  draft: false
+  prerelease: auto
+  name_template: "v{{ .Version }}"
