@@ -6,15 +6,39 @@ Sistema de memoria persistente local-first para agentes IA. Expone las mismas op
 
 ## Instalación
 
+### Homebrew (macOS y Linux)
+
 ```bash
-go install github.com/RDuuke/neabrain/cmd/neabrain@latest
+brew install RDuuke/tap/neabrain
 ```
 
-O desde source (Go 1.22+):
+### Scoop (Windows)
+
+```powershell
+scoop bucket add rduuke https://github.com/RDuuke/scoop-bucket
+scoop install neabrain
+```
+
+### Paquete `.deb` / `.rpm` / `.apk`
+
+Cada release publica paquetes nativos como assets en
+<https://github.com/RDuuke/nea-brain/releases/latest>. Ejemplo Debian/Ubuntu:
 
 ```bash
-git clone https://github.com/RDuuke/neabrain.git
-cd neabrain
+curl -fsSL -O https://github.com/RDuuke/nea-brain/releases/download/v0.7.0/neabrain_0.7.0_linux_amd64.deb
+sudo dpkg -i neabrain_0.7.0_linux_amd64.deb
+```
+
+### Descarga manual
+
+Cada release incluye archives `tar.gz`/`zip` para `linux|darwin|windows × amd64|arm64`,
+paquetes `deb`/`rpm`/`apk` y `checksums.txt` con SHA256.
+
+### Desde source (Go 1.24+)
+
+```bash
+git clone https://github.com/RDuuke/nea-brain.git
+cd nea-brain
 go build -o neabrain ./cmd/neabrain
 ```
 
